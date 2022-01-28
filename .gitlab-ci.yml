@@ -25,7 +25,11 @@ package:debian:
   stage: package
   script:
     - apt-get update -qy
-    - apt-get install -y dh-python python-all python3-pytest-runner python3-stdeb python3-pytest python3-pylint-common python3-pytest-cov python3-pygame python3-docopt tox
+    - apt-get install -y wget gnupg apt-transport-https
+    - wget -O- https://repository.salamek.cz/deb/salamek.gpg | tee /usr/share/keyrings/salamek-archive-keyring.gpg
+    - echo "deb     [signed-by=/usr/share/keyrings/salamek-archive-keyring.gpg] https://repository.salamek.cz/deb/pub all main" | tee /etc/apt/sources.list.d/salamek.cz.list
+    - apt-get update -qy
+    - apt-get install -y dh-python python-all python3-pytest-runner python3-stdeb python3-pytest python3-pylint-common python3-pytest-cov python3-pygame python3-docopt python3-xscreensaver-config tox
     - rm -rf "./deb_dist"
     - python3 setup.py --command-packages=stdeb.command bdist_deb
   tags:
@@ -39,7 +43,10 @@ package:debian:
 package:archlinux:
   stage: package
   script:
-    - pacman -Sy python-pip sudo openssh binutils fakeroot python-pygame python-docopt xscreensaver --noconfirm
+    - echo "[salamek]" >> /etc/pacman.conf
+    - echo "Server = https://repository.salamek.cz/arch/pub/any" >> /etc/pacman.conf
+    - echo "SigLevel = Optional" >> /etc/pacman.conf
+    - pacman -Sy python-pip sudo openssh binutils fakeroot python-pygame python-docopt xscreensaver python-xscreensaver-config --noconfirm
     - useradd -m -G users -s /bin/bash package
     - chown -R package:users archlinux
     - cd archlinux
@@ -56,6 +63,10 @@ packagetest:debian:
   stage: packagetest
   script:
     - apt-get update -qy
+    - apt-get install -y wget gnupg apt-transport-https
+    - wget -O- https://repository.salamek.cz/deb/salamek.gpg | tee /usr/share/keyrings/salamek-archive-keyring.gpg
+    - echo "deb     [signed-by=/usr/share/keyrings/salamek-archive-keyring.gpg] https://repository.salamek.cz/deb/pub all main" | tee /etc/apt/sources.list.d/salamek.cz.list
+    - apt-get update -qy
     - cd deb_dist
     - apt install ./*.deb -qy
   tags:
@@ -67,6 +78,9 @@ packagetest:archlinux:
   stage: packagetest
   script:
     - cd archlinux
+    - echo "[salamek]" >> /etc/pacman.conf
+    - echo "Server = https://repository.salamek.cz/arch/pub/any" >> /etc/pacman.conf
+    - echo "SigLevel = Optional" >> /etc/pacman.conf
     - pacman -Sy
     - pacman -U xscreensaver-appearing-picture*.pkg.tar.zst --noconfirm
   tags:
