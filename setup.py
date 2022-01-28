@@ -15,7 +15,7 @@ if sys.version_info < (3, 0):
 
 setup(
     name='xscreensaver-appearing-picture',
-    version='0.0.3',
+    version='0.0.4',
     packages=find_packages(exclude=['tests', 'tests.*']),
     package_data={'xscreensaver_appearing_picture': ['py.typed']},
     install_requires=install_requires,
