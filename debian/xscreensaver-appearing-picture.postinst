@@ -13,14 +13,14 @@ case "$1" in
       then
           echo "Screensaver programs section already exists."
       else
-          sed -i  '/gibson -root				    \\n\\/a\  GL:                           xscreensaver-appearing-picture -c #4285F4 -b #000000                  \\n\\' /etc/X11/app-defaults/XScreenSaver-gl
+          sed -i  '/gibson -root				    \\n\\/a\  GL:                           xscreensaver-appearing-picture -b #000000                  \\n\\' /etc/X11/app-defaults/XScreenSaver-gl
       fi
 
       if grep -q -R "hacks.xscreensaver-appearing-picture.name" /etc/X11/app-defaults/XScreenSaver-gl
       then
           echo "Screensaver hacks section already exists."
       else
-          sed -i  '/*hacks.xrayswarm.name:      XRaySwarm/a\*hacks.xscreensaver-appearing-picture.name:      Bouncing Text' /etc/X11/app-defaults/XScreenSaver-gl
+          sed -i  '/*hacks.xrayswarm.name:      XRaySwarm/a\*hacks.xscreensaver-appearing-picture.name:      Appearing Picture' /etc/X11/app-defaults/XScreenSaver-gl
       fi
     ;;
 
