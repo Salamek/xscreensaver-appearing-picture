@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<screensaver name="xscreensaver-appearing-picture" _label="Bouncing Text" gl="yes">
+
+    <hgroup>
+        <vgroup>
+            <number id="fps" type="slider" arg="-p %"
+                    _low-label="  Frame rate      Low" _high-label="High"
+                    low="25" high="60" default="25" />
+            <number id="speed" type="slider" arg="-s %"
+                    _low-label="Scroll speed     Slow" _high-label="Fast"
+                    low="1" high="100" default="1" />
+            <xscreensaver-text/>
+        </vgroup>
+
+        <vgroup>
+
+            <boolean id="show_fps" _label="Show frame rate" arg-set="-f"/>
+
+            <string id="text_color" _label="Text color" arg="-c %"/>
+            <string id="background_color" _label="Background color" arg="-b %"/>
+        </vgroup>
+    </hgroup>
+    <xscreensaver-updater/>
+
+    <_description>
+        Bouncing text from sides of screen with unicode support!
+
+        Written by Adam Schubert; 2021.
+    </_description>
+</screensaver>

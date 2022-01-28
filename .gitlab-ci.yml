@@ -1,0 +1,100 @@
+stages:
+  #- test
+  - package
+  - packagetest
+  - deploy
+
+#test:debian:
+#  stage: test
+#  script:
+#    - apt-get update -qy
+#    - apt-get install -y python3-setuptools python3-pytest-runner python3-pytest python3-pylint-common python3-pytest-cov
+#    - python3 setup.py test
+#  tags:
+#    - debian
+
+#test:archlinux:
+#  stage: test
+#  script:
+#    - pacman -Sy python-pytest-runner python-pytest python-pylint python-pytest-cov --noconfirm
+#    - python setup.py test
+#  tags:
+#    - archlinux
+
+package:debian:
+  stage: package
+  script:
+    - apt-get update -qy
+    - apt-get install -y dh-python python-all python3-pytest-runner python3-stdeb python3-pytest python3-pylint-common python3-pytest-cov python3-pygame python3-docopt tox
+    - rm -rf "./deb_dist"
+    - python3 setup.py --command-packages=stdeb.command bdist_deb
+  tags:
+    - debian
+
+  artifacts:
+    paths:
+      - deb_dist/*.deb
+    expire_in: 1d
+
+package:archlinux:
+  stage: package
+  script:
+    - pacman -Sy python-pip sudo openssh binutils fakeroot python-pygame python-docopt xscreensaver --noconfirm
+    - useradd -m -G users -s /bin/bash package
+    - chown -R package:users archlinux
+    - cd archlinux
+    - sudo -H -u package makepkg -f
+  tags:
+    - archlinux
+
+  artifacts:
+    paths:
+      - archlinux/xscreensaver-appearing-picture*
+    expire_in: 1d
+
+packagetest:debian:
+  stage: packagetest
+  script:
+    - apt-get update -qy
+    - cd deb_dist
+    - apt install ./*.deb -qy
+  tags:
+    - debian
+  dependencies:
+    - package:debian
+
+packagetest:archlinux:
+  stage: packagetest
+  script:
+    - cd archlinux
+    - pacman -Sy
+    - pacman -U xscreensaver-appearing-picture*.pkg.tar.zst --noconfirm
+  tags:
+    - archlinux
+  dependencies:
+    - package:archlinux
+
+repoupdate:
+  stage: deploy
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - apt-get update -y
+    - apt-get install python-setuptools -y
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  script:
+    - ssh www-data@repository 'rm -rf /var/www/repository.salamek.cz/www/arch/pub/any/xscreensaver-appearing-picture*.pkg.tar.zst'
+    - ssh www-data@repository 'rm -rf /var/www/repository.salamek.cz/cache/deb/pub/all/xscreensaver-appearing-picture*.deb'
+    - scp archlinux/xscreensaver-appearing-picture*.pkg.tar.zst www-data@repository:/var/www/repository.salamek.cz/www/arch/pub/any
+    - scp deb_dist/*.deb www-data@repository:/var/www/repository.salamek.cz/cache/deb/pub/all
+    - ssh www-data@repository '/var/www/repository.salamek.cz/deb-pub-update.sh'
+    - ssh www-data@repository '/var/www/repository.salamek.cz/arch-pub-update.sh'
+  dependencies:
+    - package:archlinux
+    - package:debian
+  tags:
+    - debian
+  only:
+    - tags

@@ -1,0 +1,20 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+  upgrade|failed-upgrade|abort-install|abort-upgrade)
+    ;;
+
+  remove|purge)
+      # After install
+      echo "Removing configuration from XScreenSaver config..."
+      sed -i '/xscreensaver-appearing-picture/d' /etc/X11/app-defaults/XScreenSaver-gl
+    ;;
+
+  *)
+    echo "postinst called with unknown argument \`$1'" >&2
+    exit 1
+    ;;
+esac
+
+exit 0

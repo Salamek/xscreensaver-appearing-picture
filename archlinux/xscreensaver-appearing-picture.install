@@ -1,0 +1,45 @@
+## arg 1:  the new package version
+pre_install() {
+        :
+}
+
+## arg 1:  the new package version
+post_install() {
+      echo "Updating XScreenSaver config..."
+      if grep -q -R "GL:                           xscreensaver-appearing-picture" /usr/share/X11/app-defaults/XScreenSaver
+      then
+          echo "Screensaver programs section already exists."
+      else
+          sed -i  '/gibson -root				    \\n\\/a\  GL:                           xscreensaver-appearing-picture -c #4285F4 -b #000000                 \\n\\' /usr/share/X11/app-defaults/XScreenSaver
+      fi
+
+      if grep -q -R "hacks.xscreensaver-appearing-picture.name" /usr/share/X11/app-defaults/XScreenSaver
+      then
+          echo "Screensaver hacks section already exists."
+      else
+          sed -i  '/*hacks.xrayswarm.name:      XRaySwarm/a\*hacks.xscreensaver-appearing-picture.name:      Bouncing Text' /usr/share/X11/app-defaults/XScreenSaver
+      fi
+}
+
+## arg 1:  the new package version
+## arg 2:  the old package version
+pre_upgrade() {
+        :
+}
+
+## arg 1:  the new package version
+## arg 2:  the old package version
+post_upgrade() {
+    post_install
+}
+
+## arg 1:  the old package version
+pre_remove() {
+        :
+}
+
+## arg 1:  the old package version
+post_remove() {
+    echo "Removing configuration from XScreenSaver config..."
+    sed -i '/xscreensaver-appearing-picture/d' /usr/share/X11/app-defaults/XScreenSaver
+}

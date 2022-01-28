@@ -1,0 +1,33 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+  abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+  configure)
+      # After install
+      echo "Updating XScreenSaver config..."
+      echo "Updating XScreenSaver config..."
+      if grep -q -R "GL:                           xscreensaver-appearing-picture" /etc/X11/app-defaults/XScreenSaver-gl
+      then
+          echo "Screensaver programs section already exists."
+      else
+          sed -i  '/gibson -root				    \\n\\/a\  GL:                           xscreensaver-appearing-picture -c #4285F4 -b #000000                  \\n\\' /etc/X11/app-defaults/XScreenSaver-gl
+      fi
+
+      if grep -q -R "hacks.xscreensaver-appearing-picture.name" /etc/X11/app-defaults/XScreenSaver-gl
+      then
+          echo "Screensaver hacks section already exists."
+      else
+          sed -i  '/*hacks.xrayswarm.name:      XRaySwarm/a\*hacks.xscreensaver-appearing-picture.name:      Bouncing Text' /etc/X11/app-defaults/XScreenSaver-gl
+      fi
+    ;;
+
+  *)
+    echo "postinst called with unknown argument \`$1'" >&2
+    exit 1
+    ;;
+esac
+
+exit 0
