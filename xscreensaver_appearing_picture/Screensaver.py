@@ -2,6 +2,7 @@ import random
 import signal
 import os
 import sys
+from typing import Callable
 from pathlib import Path
 
 # Disable stupid pygame message on import
@@ -10,15 +11,21 @@ import pygame
 
 
 class BouncingText(pygame.sprite.Sprite):
+    picture = None
+    picture_dimensions = None
 
-    def __init__(self, picture_path: Path):
+    def __init__(self):
         super(BouncingText, self).__init__()
         self.rect = pygame.Rect((1, 1), (1, 1))
+
+    def set_picture(self, picture_path: Path):
         self.picture = pygame.image.load(picture_path.absolute())
         self.picture_dimensions = (self.picture.get_width(), self.picture.get_height())
-        self.update_image()
+        self.update_image(0)
 
     def update_image(self, alpha: int = 255):
+        if not self.picture or not self.picture_dimensions:
+            raise ValueError('No picture was set')
         # A transparent surface onto which we blit the text surfaces.
         self.image = pygame.Surface(self.picture_dimensions, pygame.SRCALPHA)
         self.image.fill((255, 255, 255, alpha))
@@ -29,7 +36,7 @@ class BouncingText(pygame.sprite.Sprite):
 
 class Screensaver:
     def __init__(self,
-                 picture_path: Path,
+                 picture_path_callable: Callable[[], Path],
                  full_screen: bool = False,
                  show_fps: bool = False,
                  background_color: str = '#000000',
@@ -38,7 +45,7 @@ class Screensaver:
                  fps: int = 60,
                  window_id: str = None
                  ):
-        self.picture_path = picture_path
+        self.picture_path_callable = picture_path_callable
         self.show_fps = show_fps
         self.background_color = pygame.Color(background_color)
         self.animation_speed = animation_speed
@@ -70,13 +77,10 @@ class Screensaver:
         return fps_text
 
     def run(self):
-        appearing_picture = BouncingText(
-            self.picture_path,
-        )
+        appearing_picture = BouncingText()
         all_sprites = pygame.sprite.Group(appearing_picture)
 
         timer_event = pygame.USEREVENT + 1
-        pygame.time.set_timer(timer_event, self.display_time * 1000)  # display_time is in seconds, set_timer accepts ms, that's why *1000
 
         max_alpha = 255
         min_alpha = 0
@@ -85,6 +89,7 @@ class Screensaver:
         fading_out = False
 
         def _place_picture():
+            appearing_picture.set_picture(self.picture_path_callable())
             if self.width > appearing_picture.rect.width:
                 position_x = random.randint(0, self.width - appearing_picture.rect.width)
             elif self.width < appearing_picture.rect.width:
@@ -102,6 +107,7 @@ class Screensaver:
             appearing_picture.rect.y = position_y
 
         _place_picture()
+        pygame.time.set_timer(timer_event, self.display_time * 1000)  # display_time is in seconds, set_timer accepts ms, that's why *1000
         while True:
             # Events
             for event in pygame.event.get():

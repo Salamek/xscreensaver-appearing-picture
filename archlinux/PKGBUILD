@@ -12,6 +12,7 @@ depends=(
     'python-pygame'
     'python-docopt'
     'xscreensaver'
+    'python-xscreensaver-config'
 )
 
 prepare() {

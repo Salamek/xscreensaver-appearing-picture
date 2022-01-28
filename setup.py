@@ -60,6 +60,9 @@ setup(
     data_files=[
         (os.path.join(share_dir, 'xscreensaver', 'config'), [
             'usr/share/xscreensaver/config/xscreensaver-appearing-picture.xml'
+        ]),
+        (os.path.join(share_dir, 'xscreensaver-appearing-picture'), [
+            'usr/share/xscreensaver-appearing-picture/cat.png'
         ])
     ],
     project_urls={

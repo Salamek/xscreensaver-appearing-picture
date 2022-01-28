@@ -1,3 +1,4 @@
 typing;python_version<"3.5"
 pygame
 docopt
+xscreensaver-config

@@ -22,8 +22,10 @@ import signal
 import sys
 import subprocess
 import shutil
+
 from pathlib import Path
 from functools import wraps
+from xscreensaver_config.ConfigParser import ConfigParser
 from xscreensaver_appearing_picture.Screensaver import Screensaver
 import xscreensaver_appearing_picture as app_root
 
@@ -91,18 +93,30 @@ def find_cat() -> str:
 def run():
 
     def _get_default_image() -> str:
-        found_xscreensaver_text_path = shutil.which('xscreensaver-text')
-        if found_xscreensaver_text_path:
-            return subprocess.check_output(found_xscreensaver_text_path).decode('UTF-8')
+        try:
+            config_parser = ConfigParser(os.path.join(os.path.expanduser('~'), '.xscreensaver'))
+            config_parsed = config_parser.read()
+            found_xscreensaver_image_path = shutil.which('xscreensaver-getimage-file')
+            if found_xscreensaver_image_path:
+                random_image_name = subprocess.check_output(found_xscreensaver_image_path).decode('UTF-8')
+                random_image_path = os.path.join(config_parsed.get('imageDirectory'), random_image_name)
+                if not os.path.isfile(random_image_path):
+                    raise FileNotFoundError
+                return random_image_path
+        except FileNotFoundError:
+            pass
 
         return find_cat()
 
-    picture_path = Path(OPTIONS['--picture_path'] if OPTIONS['--picture_path'] else _get_default_image())
-    if not picture_path.is_file():
-        raise ValueError('Path {} is not valid file.'.format(picture_path.absolute()))
+    def picture_path_callable() -> Path:
+        picture_path = Path(OPTIONS['--picture_path'] if OPTIONS['--picture_path'] else _get_default_image())
+        if not picture_path.is_file():
+            raise ValueError('Path {} is not valid file.'.format(picture_path.absolute()))
+
+        return picture_path
 
     Screensaver(
-        picture_path,
+        picture_path_callable,
         not OPTIONS['--windowed'],
         OPTIONS['--show_fps'],
         animation_speed=int(OPTIONS['--animation_speed']),
