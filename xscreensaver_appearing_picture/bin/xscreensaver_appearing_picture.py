@@ -98,7 +98,7 @@ def run():
             config_parsed = config_parser.read()
             found_xscreensaver_image_path = shutil.which('xscreensaver-getimage-file')
             if found_xscreensaver_image_path:
-                random_image_name = subprocess.check_output(found_xscreensaver_image_path).decode('UTF-8')
+                random_image_name = subprocess.check_output(found_xscreensaver_image_path).decode('UTF-8').strip()
                 random_image_path = os.path.join(config_parsed.get('imageDirectory'), random_image_name)
                 if not os.path.isfile(random_image_path):
                     raise FileNotFoundError
