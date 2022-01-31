@@ -1,7 +1,7 @@
 # xscreensaver-appearing-picture
 Simple appearing picture screensaver for xscreensaver.
 
-Demo at https://www.youtube.com/watch?v=22j96jMjcXU
+Demo at https://youtu.be/O3e0spl4ASo
 
 # Features
 
