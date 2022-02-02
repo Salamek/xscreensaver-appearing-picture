@@ -103,7 +103,7 @@ def run():
                 if not os.path.isfile(random_image_path):
                     raise FileNotFoundError
                 return random_image_path
-        except FileNotFoundError:
+        except (FileNotFoundError, subprocess.CalledProcessError):
             pass
 
         return find_cat()
