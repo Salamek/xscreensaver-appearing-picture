@@ -1,5 +1,5 @@
 pkgname=xscreensaver-appearing-picture
-pkgver=0.0.6
+pkgver=0.0.7
 pkgdesc="Simple appearing picture screensaver for xscreensaver."
 pkgrel=1
 install=xscreensaver-appearing-picture.install
