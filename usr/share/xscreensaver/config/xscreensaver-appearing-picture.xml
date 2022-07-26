@@ -10,7 +10,7 @@
             <number id="animation_speed" type="slider" arg="-s %"
                     _low-label="Animation speed     Slow" _high-label="Fast"
                     low="1" high="85" default="1" />
-            <number id="display_time"  arg="-t %"  label="Display time (s)"
+            <number id="display_time"  arg="-t %"  _label="Display time (s)"
                     low="1" high="43200" default="5" />
             <xscreensaver-image />
         </vgroup>
