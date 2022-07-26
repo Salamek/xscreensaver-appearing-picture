@@ -19,7 +19,7 @@ class BouncingText(pygame.sprite.Sprite):
         self.rect = pygame.Rect((1, 1), (1, 1))
 
     def set_picture(self, picture_path: Path):
-        self.picture = pygame.image.load(picture_path.absolute())
+        self.picture = pygame.image.load(str(picture_path.absolute()))
         self.picture_dimensions = (self.picture.get_width(), self.picture.get_height())
         self.update_image(0)
 
