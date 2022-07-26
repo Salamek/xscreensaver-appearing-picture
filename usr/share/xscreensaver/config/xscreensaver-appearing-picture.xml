@@ -18,6 +18,7 @@
         <vgroup>
             <file id="picture_path" _label="Picture path"  arg="-c %" />
             <boolean id="show_fps" _label="Show frame rate" arg-set="-f"/>
+            <boolean id="alternative_loader" _label="Use alternative loader instead of native one" arg-set="-a"/>
             <string id="background_color" _label="Background color" arg="-b %"/>
         </vgroup>
     </hgroup>
